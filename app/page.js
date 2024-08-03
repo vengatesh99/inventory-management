@@ -1,9 +1,24 @@
-"use client";
-import Image from "next/image";
-import styles from "./page.module.css";
-import { Box, Stack, Typography, Button, Modal, TextField } from '@mui/material'
+"use client"
+import * as React from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 import { firestore } from "./firebase";
-import { useEffect, useState } from "react";
+import { useState } from 'react';
+import { useRouter } from "next/navigation";
+import theme from "../components/CustomTheme"
+
 import {
   query,
   collection,
@@ -12,155 +27,142 @@ import {
   deleteDoc,
   getDoc,
   setDoc,
+  doc,
 } from "firebase/firestore";
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'white',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 3,
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="https://mui.com/">
+        Vengatesh Deen Dayal
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
 }
- export default function Home (){
-  const [inventory, setInventory] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [itemName, setItemName] = useState("");
 
-  const updateInventory = async () => {
-    const inventoryRef = query(collection(firestore, "inventory"));
-    const docs = await getDocs(inventoryRef); //reference for all docs present in inventory collection
-    const inventoryList = [];
-    docs.forEach((doc) => {
-      inventoryList.push({
-        name: doc.id,
-        ...doc.data(),
-      });
-    });
-    setInventory(inventoryList);
-  };
 
-  const removeItem = async (item) => {
-    const docRef = doc(collection(firestore, "inventory"), item);
-    const docSnap = await getDoc(docRef);
+export default function SignInSide() {
 
-    if (docSnap.exists()) {
-      const { quantity } = docSnap.data();
-      if (quantity === 1) {
-        await deleteDoc(docRef);
-      } else {
-        await setDoc(docRef, { quantity: quantity - 1 });
-      }
-    } else {
-      //Handle document not exist
+  const [incorrectPwd,setIncorrectPwd] = useState(false)
+  const router = useRouter();
+
+  const handleSubmit = async(event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const checkUser = {
+      username: data.get('username'),
+      password: data.get('password'),
     }
-    await updateInventory(); //Update the state of inventory list
-  };
 
-  const addItem = async (item) => {
-    const docRef = doc(collection(firestore, "inventory"), item); //reference for a particular document
+    const docRef = doc(collection(firestore, "inventory"), checkUser.username);
     const docSnap = await getDoc(docRef);
-    await setDoc(docRef, { quantity: quantity + 1 });
 
-    await updateInventory(); //Update the state of inventory list
+    if (docSnap.exists()){
+      const docData = docSnap.data()
+      if(docData.password === checkUser.password){
+        //redirect user to the /user page
+        setIncorrectPwd(false)
+        router.push(`user/${docSnap.id}`)
+      }
+      else{
+        setIncorrectPwd(true)
+      }
+    }
+    else{
+      setIncorrectPwd(true)
+    }
+
   };
+  // const handleLogIn = async (event) => {
+  //   //Logic for verifying user
+  //   event.preventDefault();
+  //   const data = new FormData(event.currentTarget);
 
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
-  
-  useEffect(() => {
-    updateInventory();
-  }, []);
+  // }
 
   return (
-    <Box
-    width="100vw"
-    height="100vh"
-    display={'flex'}
-    justifyContent={'center'}
-    flexDirection={'column'}
-    alignItems={'center'}
-    gap={2}
-  >
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-          Add Item
-        </Typography>
-        <Stack width="100%" direction={'row'} spacing={2}>
-          <TextField
-            id="outlined-basic"
-            label="Item"
-            variant="outlined"
-            fullWidth
-            value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-          />
-          <Button
-            variant="outlined"
-            onClick={() => {
-              addItem(itemName)
-              setItemName('')
-              handleClose()
+    <>
+      <Grid container component="main" sx={{ height: '100vh' }}>
+        <CssBaseline />
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage:
+              'url("/static/images/templates/templates-images/sign-in-side-bg.png")',
+            backgroundColor: (t) =>
+              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+            backgroundSize: 'cover',
+            backgroundPosition: 'left',
+          }}
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
             }}
           >
-            Add
-          </Button>
-        </Stack>
-      </Box>
-    </Modal>
-    <Button variant="contained" onClick={handleOpen}>
-      Add New Item
-    </Button>
-    <Box border={'1px solid #333'}>
-      <Box
-        width="800px"
-        height="100px"
-        bgcolor={'#ADD8E6'}
-        display={'flex'}
-        justifyContent={'center'}
-        alignItems={'center'}
-      >
-        <Typography variant={'h2'} color={'#333'} textAlign={'center'}>
-          Inventory Items
-        </Typography>
-      </Box>
-      <Stack width="800px" height="300px" spacing={2} overflow={'auto'}>
-        {inventory.map(({name, quantity}) => (
-          <Box
-            key={name}
-            width="100%"
-            minHeight="150px"
-            display={'flex'}
-            justifyContent={'space-between'}
-            alignItems={'center'}
-            bgcolor={'#f0f0f0'}
-            paddingX={5}
-          >
-            <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
-              {name.charAt(0).toUpperCase() + name.slice(1)}
+            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
             </Typography>
-            <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
-              Quantity: {quantity}
-            </Typography>
-            <Button variant="contained" onClick={() => removeItem(name)}>
-              Remove
-            </Button>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="User Name"
+                name="username"
+                autoComplete="username"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+              {incorrectPwd&&<Typography sx ={{color:'red'}} variant='body2'>Incorrect Username/Password, Try Again!</Typography>}
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
+              <Grid container>
+                <Grid item>
+                  <Link href="/signup" variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </Link>
+                </Grid>
+              </Grid>
+              <Copyright sx={{ mt: 5 }} />
+            </Box>
           </Box>
-        ))}
-      </Stack>
-    </Box>
-  </Box>
+        </Grid>
+      </Grid>
+    </>
   );
 }
