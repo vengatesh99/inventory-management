@@ -13,7 +13,7 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import { Container } from '@mui/system';
 import { firestore } from "./firebase";
 import { useState } from 'react';
 import { useRouter } from "next/navigation";
@@ -34,7 +34,7 @@ function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://resume.vengateshdd.com/">
         Vengatesh Deen Dayal
       </Link>{' '}
       {new Date().getFullYear()}
@@ -86,21 +86,25 @@ export default function SignInSide() {
   return (
     <>
       <Grid container component="main" sx={{ height: '100vh' }}>
-        <CssBaseline />
         <Grid
           item
           xs={false}
           sm={4}
           md={7}
           sx={{
-            backgroundImage:
-              'url("/static/images/templates/templates-images/sign-in-side-bg.png")',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+            backgroundColor: '#4fc3f7',
             backgroundSize: 'cover',
             backgroundPosition: 'left',
           }}
-        />
+        >
+        <Container></Container>
+          <Typography variant="h2"mx={30} my={50}
+          sx={{color:'rgb(0,0,0,.6)',
+          }}>Welcome to 
+          Pantry Tracker
+          </Typography>
+        
+        </Grid>
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
             sx={{

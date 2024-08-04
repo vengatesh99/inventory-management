@@ -70,14 +70,14 @@ const theme = createTheme({
             userSelect: 'none',
             touchAction: 'manipulation',
             width: 'auto',
-            // '&:hover': {
-            //   backgroundColor: '#374151', // Hover background color
-            // },
-            // '&:focus': {
-            //   boxShadow: 'none',
-            //   outline: '2px solid transparent',
-            //   outlineOffset: '2px',
-            // },
+            '&:hover': {
+              backgroundColor: '#374151', // Hover background color
+            },
+            '&:focus': {
+              boxShadow: 'none',
+              outline: '2px solid transparent',
+              outlineOffset: '2px',
+            },
           },
         },
       },

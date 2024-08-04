@@ -9,7 +9,8 @@ import {
   dividerClasses,
   Box,
   TextField,
-  Button
+  Button,
+  Grow
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import BorderColorTwoToneIcon from "@mui/icons-material/BorderColorTwoTone";
@@ -22,6 +23,7 @@ const InventoryCard = ({ cardItem, clearItem, editItem, setOpenAlert}) => {
   const titleValueRef = useRef(null);
   const quantityValueRef = useRef(null);
   const [edit, setEdit] = useState(false);
+  const [open,isOpen] = useState(true);
 
 
   function handleEdit() {
@@ -38,6 +40,7 @@ const InventoryCard = ({ cardItem, clearItem, editItem, setOpenAlert}) => {
   }
 
   return (
+    <Grow in={open}>
     <Card sx={{ maxWidth: 345 }} elevation={2}>
       <CardHeader
         title={
@@ -101,6 +104,7 @@ const InventoryCard = ({ cardItem, clearItem, editItem, setOpenAlert}) => {
         </IconButton> */}
       </CardActions>
     </Card>
+    </Grow>
   );
 };
 
