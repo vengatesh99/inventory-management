@@ -2,7 +2,7 @@ import  OpenAI from "openai"
 
 const ClassifyImg = async (imgBase64) => {
     console.log(imgBase64)
-    const openai = new OpenAI({apiKey: process.env.OPENAI_KEY, dangerouslyAllowBrowser: true});
+    const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY, dangerouslyAllowBrowser: true});
     let title = ''
     const response = await openai.chat.completions.create({
         model: "gpt-4o-mini",
